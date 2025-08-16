@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -102,80 +103,97 @@
     <section id="skills" class="skills">
         <div class="container">
             <h2 class="section-title">Skills & Technologies</h2>
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <h3>Programming Languages</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <i class="fab fa-python"></i>
-                            <span>Python</span>
+            <div class="card-stack-container skills-stack">
+                <div class="card-stack" id="skills-stack">
+                    <div class="stack-card" data-category="Databases & Cloud">
+                        <div class="skill-category">
+                            <h3>Databases & Cloud</h3>
+                            <div class="skill-items">
+                                <div class="skill-item">
+                                    <i class="fas fa-leaf"></i>
+                                    <span>MongoDB</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-database"></i>
+                                    <span>MySQL</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-plug"></i>
+                                    <span>API Development</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fab fa-aws"></i>
+                                    <span>AWS</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Cybersecurity</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="skill-item">
-                            <i class="fab fa-js-square"></i>
-                            <span>JavaScript</span>
+                    </div>
+                    <div class="stack-card" data-category="Frameworks & Technologies">
+                        <div class="skill-category">
+                            <h3>Frameworks & Technologies</h3>
+                            <div class="skill-items">
+                                <div class="skill-item">
+                                    <i class="fab fa-react"></i>
+                                    <span>React.js</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fab fa-node-js"></i>
+                                    <span>Node.js</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-rocket"></i>
+                                    <span>Next.js</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fab fa-google"></i>
+                                    <span>Flutter</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-fire"></i>
+                                    <span>Firebase</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="skill-item">
-                            <i class="fas fa-code"></i>
-                            <span>C++</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fas fa-code"></i>
-                            <span>C</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fab fa-html5"></i>
-                            <span>HTML5</span>
+                    </div>
+                    <div class="stack-card" data-category="Programming Languages">
+                        <div class="skill-category">
+                            <h3>Programming Languages</h3>
+                            <div class="skill-items">
+                                <div class="skill-item">
+                                    <i class="fab fa-python"></i>
+                                    <span>Python</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fab fa-js-square"></i>
+                                    <span>JavaScript</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-code"></i>
+                                    <span>C++</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fas fa-code"></i>
+                                    <span>C</span>
+                                </div>
+                                <div class="skill-item">
+                                    <i class="fab fa-html5"></i>
+                                    <span>HTML5</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="skill-category">
-                    <h3>Frameworks & Technologies</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <i class="fab fa-react"></i>
-                            <span>React.js</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fab fa-node-js"></i>
-                            <span>Node.js</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fas fa-rocket"></i>
-                            <span>Next.js</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fab fa-google"></i>
-                            <span>Flutter</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fas fa-fire"></i>
-                            <span>Firebase</span>
-                        </div>
+                <div class="stack-indicators">
+                    <div class="stack-counter">
+                        <span id="skills-current">1</span> / <span id="skills-total">3</span>
                     </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Databases & Cloud</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <i class="fas fa-leaf"></i>
-                            <span>MongoDB</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fas fa-database"></i>
-                            <span>MySQL</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fas fa-plug"></i>
-                            <span>API Development</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fab fa-aws"></i>
-                            <span>AWS</span>
-                        </div>
-                        <div class="skill-item">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Cybersecurity</span>
-                        </div>
+                    <div class="swipe-hint">
+                        <i class="fas fa-hand-pointer"></i>
+                        <span>Click or swipe to explore</span>
                     </div>
                 </div>
             </div>
@@ -186,92 +204,255 @@
     <section id="projects" class="projects">
         <div class="container">
             <h2 class="section-title">Featured Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="https://via.placeholder.com/400x250" alt="ProfitMitra">
-                        <div class="project-overlay">
-                            <div class="project-links">
-                                <a href="#" class="project-link"><i class="fab fa-github"></i></a>
-                                <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+            <div class="card-stack-container projects-stack">
+                <div class="card-stack" id="projects-stack">
+                    <div class="stack-card" data-project="E-Commerce Python GUI">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="E-Commerce GUI">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/E-COM-Python-GUI" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>E-Commerce Python GUI</h3>
+                                <p>A desktop e-commerce application built with Python featuring a graphical user interface for shopping cart functionality and product management.</p>
+                                <div class="project-tech">
+                                    <span>Python</span>
+                                    <span>GUI</span>
+                                    <span>E-commerce</span>
+                                    <span>Desktop App</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="project-content">
-                        <h3>ProfitMitra: AI-Powered Investment Advisory Tool</h3>
-                        <p>A smart investment advisory tool that leverages real-time financial data from Yahoo Finance to provide personalized financial insights. Features include stock data analysis, chatbot, and user-friendly dashboard.</p>
-                        <div class="project-tech">
-                            <span>Next.js</span>
-                            <span>TypeScript</span>
-                            <span>Node.js</span>
-                            <span>Yahoo Finance API</span>
+
+                    <div class="stack-card" data-project="Chat Application">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="Chat Application">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/Chat-Application-using-Socket" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>Chat Application using Socket</h3>
+                                <p>A real-time chat application using WebSocket technology for instant communication on a client-server basis with dynamic messaging features.</p>
+                                <div class="project-tech">
+                                    <span>C++</span>
+                                    <span>WebSocket</span>
+                                    <span>Real-time</span>
+                                    <span>Networking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="World Clock App">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="World Clock App">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/World_Clock-app-using-Flutter" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>World Clock App</h3>
+                                <p>A Flutter app that delivers real-time clock information from the World Time API. Compare and track time across different countries with ease.</p>
+                                <div class="project-tech">
+                                    <span>Flutter</span>
+                                    <span>API Integration</span>
+                                    <span>Real-time</span>
+                                    <span>Mobile</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="Instagram Clone">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="Instagram Clone">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/Instagram-clone" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>Instagram Clone</h3>
+                                <p>A complete Instagram clone built using Flutter and Dart, replicating core features and functionality of the popular social media platform.</p>
+                                <div class="project-tech">
+                                    <span>Dart</span>
+                                    <span>Flutter</span>
+                                    <span>Social Media</span>
+                                    <span>Mobile App</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="Traction Shastra">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="Traction Shastra">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/Traction-Shastra" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>Traction Shastra</h3>
+                                <p>A comprehensive web application built with PHP for managing and analyzing traction-related data and processes.</p>
+                                <div class="project-tech">
+                                    <span>PHP</span>
+                                    <span>Web Development</span>
+                                    <span>Data Analysis</span>
+                                    <span>Management</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="Electronics Lab Inventory">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="Electronics Lab Inventory">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/Electronics-Lab-Inventory-Management-System-LIMS" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>Electronics Lab Inventory Management System</h3>
+                                <p>A complete Laboratory Information Management System (LIMS) for tracking and managing electronics lab inventory and equipment.</p>
+                                <div class="project-tech">
+                                    <span>JavaScript</span>
+                                    <span>LIMS</span>
+                                    <span>Inventory</span>
+                                    <span>Management</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="Legal Document Validation">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="Legal Document Validation">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/Legal-Document-Validation-System" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>Legal Document Validation System</h3>
+                                <p>A comprehensive system for validating legal documents using advanced algorithms and automation techniques.</p>
+                                <div class="project-tech">
+                                    <span>Python</span>
+                                    <span>Document Processing</span>
+                                    <span>Validation</span>
+                                    <span>Legal Tech</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="FallGuard App">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="FallGuard App">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/FallGuard-App" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>FallGuard App</h3>
+                                <p>An IoT system with a Flutter app for real-time monitoring of falls and health metrics. Uses ESP32, MPU-9250, and Firebase for live data tracking.</p>
+                                <div class="project-tech">
+                                    <span>Dart</span>
+                                    <span>Flutter</span>
+                                    <span>IoT</span>
+                                    <span>Firebase</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="PhishGuard">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="PhishGuard">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/PhishGuard" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>PhishGuard</h3>
+                                <p>An AI/ML-based system for detecting phishing attempts by analyzing email content and links. Uses machine learning to classify suspicious communications.</p>
+                                <div class="project-tech">
+                                    <span>Jupyter Notebook</span>
+                                    <span>Python</span>
+                                    <span>AI/ML</span>
+                                    <span>Cybersecurity</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stack-card" data-project="ProfitMitra">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://via.placeholder.com/400x250" alt="ProfitMitra">
+                                <div class="project-overlay">
+                                    <div class="project-links">
+                                        <a href="https://github.com/RiddheshFirake/profitmitra" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
+                                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3>ProfitMitra</h3>
+                                <p>A financial management platform that helps users track investments, analyze trading performance, and make informed decisions to optimize their strategies.</p>
+                                <div class="project-tech">
+                                    <span>TypeScript</span>
+                                    <span>Next.js</span>
+                                    <span>Finance</span>
+                                    <span>Investment</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="https://via.placeholder.com/400x250" alt="Cloud Vault">
-                        <div class="project-overlay">
-                            <div class="project-links">
-                                <a href="#" class="project-link"><i class="fab fa-github"></i></a>
-                                <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                            </div>
-                        </div>
+                <div class="stack-indicators">
+                    <div class="stack-counter">
+                        <span id="projects-current">1</span> / <span id="projects-total">10</span>
                     </div>
-                    <div class="project-content">
-                        <h3>Cloud Vault (RBAC)</h3>
-                        <p>A cloud vault project enabling users to securely upload files to OwnCloud, with custom Role-Based Access Control (RBAC) system for granular administrative user and role management.</p>
-                        <div class="project-tech">
-                            <span>OwnCloud</span>
-                            <span>RBAC</span>
-                            <span>Security</span>
-                            <span>Cloud Storage</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="https://via.placeholder.com/400x250" alt="PhishGuard">
-                        <div class="project-overlay">
-                            <div class="project-links">
-                                <a href="#" class="project-link"><i class="fab fa-github"></i></a>
-                                <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>PhishGuard</h3>
-                        <p>An AI/ML-based system for detecting phishing attempts by analyzing email content and links. Employs SVR model to accurately classify suspicious communications and enhance digital security.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>Machine Learning</span>
-                            <span>SVR Model</span>
-                            <span>Cybersecurity</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="https://via.placeholder.com/400x250" alt="Chat Application">
-                        <div class="project-overlay">
-                            <div class="project-links">
-                                <a href="#" class="project-link"><i class="fab fa-github"></i></a>
-                                <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Real-time Chat Application</h3>
-                        <p>A dynamic platform for real-time conversations using LocalWebSocket Chat Service. Allows people to connect and chat instantly on a client-server basis with swift and responsive experience.</p>
-                        <div class="project-tech">
-                            <span>WebSocket</span>
-                            <span>Real-time</span>
-                            <span>Client-Server</span>
-                            <span>JavaScript</span>
-                        </div>
+                    <div class="swipe-hint">
+                        <i class="fas fa-hand-pointer"></i>
+                        <span>Click or swipe to explore</span>
                     </div>
                 </div>
             </div>
@@ -449,6 +630,7 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
