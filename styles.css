@@ -395,10 +395,67 @@ section {
     position: relative;
     z-index: 10;
 }
-.skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+
+/* Improved Card Stack Styles */
+.card-stack {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 500px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+.stack-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center bottom;
+    user-select: none;
+    will-change: transform, opacity;
+}
+
+/* Remove the nth-child CSS rules and let JavaScript handle positioning */
+.stack-card:not(.swiped-left):not(.swiped-right):not(.swiped-up) {
+    pointer-events: none;
+}
+
+.stack-card:first-child:not(.swiped-left):not(.swiped-right):not(.swiped-up) {
+    pointer-events: auto;
+}
+
+.stack-card:hover:first-child {
+    transform: translateY(-5px) scale(1.02) !important;
+}
+
+/* Swipe animation classes */
+.stack-card.swiped-left,
+.stack-card.swiped-right,
+.stack-card.swiped-up {
+    pointer-events: none;
+    z-index: 1 !important;
+}
+
+
+.swipe-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    animation: pulse-hint 2s infinite;
+}
+
+@keyframes pulse-hint {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.swipe-hint i {
+    color: var(--primary-color);
 }
 
 .skill-category {
@@ -464,10 +521,9 @@ section {
     z-index: 10;
 }
 
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+.projects-stack .card-stack {
+    max-width: 450px;
+    height: 600px;
 }
 
 .project-card {
@@ -933,12 +989,19 @@ section {
         left: 10px;
     }
 
-    .projects-grid {
-        grid-template-columns: 1fr;
+    /* Swiper responsive adjustments */
+    .card-stack {
+        max-width: 350px;
+        height: 450px;
     }
-
-    .skills-grid {
-        grid-template-columns: 1fr;
+    
+    .projects-stack .card-stack {
+        max-width: 320px;
+        height: 500px;
+    }
+    
+    .swipe-hint {
+        font-size: 0.8rem;
     }
 }
 
