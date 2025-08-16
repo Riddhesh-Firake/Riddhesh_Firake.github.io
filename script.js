@@ -4,10 +4,14 @@ const navToggle = document.getElementById('nav-toggle');
 const navMenu = document.getElementById('nav-menu');
 const navLinks = document.querySelectorAll('.nav-link');
 
-// Toggle mobile menu
+// Toggle mobile menu with GSAP integration
 navToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    navToggle.classList.toggle('active');
+    // Only use basic toggle if GSAP is not handling it
+    if (typeof gsap === 'undefined' || !window.GSAPAnimationController) {
+        navMenu.classList.toggle('active');
+        navToggle.classList.toggle('active');
+    }
+    // GSAP handles the animation if available
 });
 
 // Close mobile menu when clicking on a link
@@ -18,12 +22,15 @@ navLinks.forEach(link => {
     });
 });
 
-// Navbar scroll effect
+// Navbar scroll effect with GSAP integration
 window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
+    // Only apply basic scroll effects if GSAP is not handling it
+    if (typeof gsap === 'undefined' || !window.GSAPAnimationController) {
+        if (window.scrollY > 100) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
     }
 });
 
@@ -50,6 +57,13 @@ function dynamicTypeWriter() {
     const dynamicElement = document.getElementById('dynamic-text');
     if (!dynamicElement) return;
     
+    // Check if GSAP is available and use enhanced version
+    if (typeof gsap !== 'undefined' && gsap.to) {
+        // GSAP version will handle this
+        return;
+    }
+    
+    // Fallback to original typing animation
     const texts = [
         'Riddhesh Firake',
         'a Developer',
@@ -167,94 +181,163 @@ function addCardInteraction(card, onSwipe) {
     let currentY = 0;
     let currentX = 0;
     let isDragging = false;
+    let isAnimating = false;
+    let dragStarted = false;
+    
+    // Remove existing event listeners to prevent duplicates
+    card.removeEventListener('mousedown', handleStart);
+    card.removeEventListener('touchstart', handleStart);
+    card.removeEventListener('click', handleClick);
     
     // Mouse events
     card.addEventListener('mousedown', handleStart);
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('mouseleave', handleEnd); // Handle mouse leaving window
     
     // Touch events
-    card.addEventListener('touchstart', handleStart, { passive: true });
-    document.addEventListener('touchmove', handleMove, { passive: true });
+    card.addEventListener('touchstart', handleStart, { passive: false });
+    document.addEventListener('touchmove', handleMove, { passive: false });
     document.addEventListener('touchend', handleEnd);
+    document.addEventListener('touchcancel', handleEnd); // Handle touch cancellation
     
     // Click event (for simple click to swipe)
-    card.addEventListener('click', (e) => {
-        const topCard = card.closest('.card-stack').querySelector('.stack-card:first-child');
-        if (!isDragging && card === topCard) {
+    card.addEventListener('click', handleClick);
+    
+    function handleClick(e) {
+        const stack = card.closest('.card-stack');
+        const topCard = stack.querySelector('.stack-card:first-child');
+        if (!isDragging && !dragStarted && !isAnimating && card === topCard) {
+            e.preventDefault();
+            e.stopPropagation();
             // Simple click - swipe up
+            isAnimating = true;
             swipeCard(card, 'up');
-            setTimeout(onSwipe, 300);
+            setTimeout(() => {
+                onSwipe();
+                isAnimating = false;
+            }, 250); // Reduced timeout
         }
-    });
+    }
     
     function handleStart(e) {
-        const topCard = card.closest('.card-stack').querySelector('.stack-card:first-child');
-        if (card !== topCard) return; // Only allow interaction with top card
+        const stack = card.closest('.card-stack');
+        const topCard = stack.querySelector('.stack-card:first-child');
+        if (card !== topCard || isAnimating) return;
         
         if (card.classList.contains('swiped-left') || 
             card.classList.contains('swiped-right') || 
             card.classList.contains('swiped-up')) return;
             
         isDragging = true;
+        dragStarted = false;
         const touch = e.type === 'touchstart' ? e.touches[0] : e;
         startY = touch.clientY;
         startX = touch.clientX;
+        currentX = 0;
+        currentY = 0;
+        
+        // Prevent any transitions and visual artifacts
         card.style.transition = 'none';
+        card.style.willChange = 'transform';
+        card.style.pointerEvents = 'auto';
+        
+        // Prevent default to avoid scrolling on mobile and selection on desktop
         e.preventDefault();
+        e.stopPropagation();
     }
     
     function handleMove(e) {
-        if (!isDragging) return;
+        if (!isDragging || isAnimating) return;
         
-        const touch = e.type === 'touchmove' ? e.touches : e;
+        const touch = e.type === 'touchmove' ? e.touches[0] : e;
+        if (!touch) return; // Safety check for mouse events
+        
         currentY = touch.clientY - startY;
         currentX = touch.clientX - startX;
         
-        // Apply transform based on drag
-        const rotation = currentX * 0.1;
-        card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
+        // Mark that actual dragging has started (not just a tap)
+        if (!dragStarted && (Math.abs(currentX) > 5 || Math.abs(currentY) > 5)) {
+            dragStarted = true;
+        }
         
-        // Change opacity based on distance
-        const distance = Math.sqrt(currentX * currentX + currentY * currentY);
-        const opacity = Math.max(0.3, 1 - distance / 200);
-        card.style.opacity = opacity;
+        if (dragStarted) {
+            // Apply transform based on drag
+            const rotation = currentX * 0.06; // Reduced rotation for smoother feel
+            const scale = Math.max(0.98, 1 - Math.abs(currentX) / 1000);
+            card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg) scale(${scale})`;
+            
+            // Different opacity handling for mobile vs desktop
+            const isMobile = e.type.includes('touch');
+            if (isMobile) {
+                // Very subtle opacity change for mobile feedback
+                const distance = Math.sqrt(currentX * currentX + currentY * currentY);
+                const opacity = Math.max(0.9, 1 - distance / 500);
+                card.style.opacity = opacity;
+            } else {
+                // NO opacity change for desktop - solid object behavior
+                card.style.opacity = '1';
+            }
+        }
         
         e.preventDefault();
+        e.stopPropagation();
     }
     
     function handleEnd(e) {
-        if (!isDragging) return;
+        if (!isDragging || isAnimating) return;
         isDragging = false;
         
-        card.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        // Reset will-change immediately
+        card.style.willChange = 'auto';
         
-        const distance = Math.sqrt(currentX * currentX + currentY * currentY);
-        const threshold = 100;
-        
-        if (distance > threshold) {
-            // Determine swipe direction
-            if (Math.abs(currentX) > Math.abs(currentY)) {
-                // Horizontal swipe
-                if (currentX > 0) {
-                    swipeCard(card, 'right');
+        // Only process swipe if actual dragging occurred
+        if (dragStarted) {
+            const distance = Math.sqrt(currentX * currentX + currentY * currentY);
+            const threshold = 70; // Reduced threshold
+            
+            if (distance > threshold) {
+                isAnimating = true;
+                // Quick transition for swipe animation
+                card.style.transition = 'all 0.25s cubic-bezier(0.4, 0.0, 0.2, 1)';
+                
+                // Determine swipe direction
+                if (Math.abs(currentX) > Math.abs(currentY)) {
+                    // Horizontal swipe
+                    if (currentX > 0) {
+                        swipeCard(card, 'right');
+                    } else {
+                        swipeCard(card, 'left');
+                    }
                 } else {
-                    swipeCard(card, 'left');
+                    // Vertical swipe
+                    if (currentY < 0) {
+                        swipeCard(card, 'up');
+                    } else {
+                        // Snap back for down swipe
+                        resetCard(card);
+                        isAnimating = false;
+                        dragStarted = false;
+                        return;
+                    }
                 }
+                
+                // Faster callback with no flash
+                setTimeout(() => {
+                    onSwipe();
+                    isAnimating = false;
+                    dragStarted = false;
+                }, 250);
             } else {
-                // Vertical swipe
-                if (currentY < 0) {
-                    swipeCard(card, 'up');
-                } else {
-                    // Snap back for down swipe
-                    resetCard(card);
-                    return;
-                }
+                // Snap back with quick transition
+                card.style.transition = 'all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1)';
+                resetCard(card);
+                dragStarted = false;
             }
-            setTimeout(onSwipe, 300);
         } else {
-            // Snap back
+            // Just a tap, reset immediately
             resetCard(card);
+            dragStarted = false;
         }
         
         currentX = 0;
@@ -263,19 +346,22 @@ function addCardInteraction(card, onSwipe) {
 }
 
 function swipeCard(card, direction) {
-    card.style.transition = 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    // Use very fast transition to minimize flash
+    card.style.transition = 'all 0.25s cubic-bezier(0.4, 0.0, 0.2, 1)';
+    card.style.willChange = 'transform, opacity';
+    card.style.pointerEvents = 'none';
     
     switch(direction) {
         case 'left':
-            card.style.transform = 'translateX(-150%) rotate(-30deg)';
+            card.style.transform = 'translateX(-130%) rotate(-20deg) scale(0.7)';
             card.classList.add('swiped-left');
             break;
         case 'right':
-            card.style.transform = 'translateX(150%) rotate(30deg)';
+            card.style.transform = 'translateX(130%) rotate(20deg) scale(0.7)';
             card.classList.add('swiped-right');
             break;
         case 'up':
-            card.style.transform = 'translateY(-150%) scale(0.8)';
+            card.style.transform = 'translateY(-130%) scale(0.6)';
             card.classList.add('swiped-up');
             break;
     }
@@ -283,31 +369,48 @@ function swipeCard(card, direction) {
 }
 
 function resetCard(card) {
+    // Reset to original position smoothly
     card.style.transform = '';
-    card.style.opacity = '';
+    card.style.opacity = '1';
+    card.style.willChange = 'auto';
+    card.style.pointerEvents = 'auto';
+    
+    // Clear transition after reset
+    setTimeout(() => {
+        card.style.transition = '';
+    }, 150);
 }
 
 function removeTopCard(stack, counterElement, callback) {
     const topCard = stack.querySelector('.stack-card:first-child');
     
     if (topCard) {
+        // Immediately hide the card to prevent flash
+        topCard.style.visibility = 'hidden';
+        
         // Move the top card to the bottom of the stack
         setTimeout(() => {
-            // Reset all styles and classes
+            // Reset all styles and classes instantly
+            topCard.style.transition = 'none';
+            topCard.style.visibility = 'visible';
             topCard.classList.remove('swiped-left', 'swiped-right', 'swiped-up');
             topCard.style.transform = '';
             topCard.style.opacity = '';
-            topCard.style.transition = '';
+            topCard.style.pointerEvents = '';
+            topCard.style.willChange = 'auto';
             
-            // Move to bottom
+            // Move to bottom instantly
             stack.appendChild(topCard);
             
-            // Update stack order with a slight delay to ensure DOM update
-            setTimeout(() => {
-                updateStackOrder(stack);
-                callback();
-            }, 50);
-        }, 300);
+            // Force immediate reflow
+            topCard.offsetHeight;
+            
+            // Update stack order instantly
+            updateStackOrder(stack);
+            
+            // Execute callback immediately
+            if (callback) callback();
+        }, 250); // Match the swipe animation timing
     }
 }
 
@@ -315,28 +418,40 @@ function updateStackOrder(stack) {
     const cards = Array.from(stack.querySelectorAll('.stack-card'));
     
     cards.forEach((card, index) => {
-        // Clear any existing inline styles that might interfere
-        card.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        
-        // Set z-index
+        // Set z-index immediately
         card.style.zIndex = cards.length - index;
         
-        // Apply stacking transforms
-        if (index === 0) {
-            card.style.transform = 'translateY(0px) scale(1)';
-            card.style.opacity = '1';
-        } else if (index === 1) {
-            card.style.transform = 'translateY(-10px) scale(0.95)';
-            card.style.opacity = '0.9';
-        } else if (index === 2) {
-            card.style.transform = 'translateY(-20px) scale(0.9)';
-            card.style.opacity = '0.8';
-        } else if (index === 3) {
-            card.style.transform = 'translateY(-30px) scale(0.85)';
-            card.style.opacity = '0.7';
-        } else {
-            card.style.transform = 'translateY(-40px) scale(0.8)';
-            card.style.opacity = '0.6';
+        // Apply stacking transforms only to cards that aren't being swiped
+        if (!card.classList.contains('swiped-left') && 
+            !card.classList.contains('swiped-right') && 
+            !card.classList.contains('swiped-up')) {
+            
+            // No transition for instant positioning
+            card.style.transition = 'none';
+            
+            if (index === 0) {
+                card.style.transform = 'translateY(0px) scale(1)';
+                card.style.opacity = '1';
+            } else if (index === 1) {
+                card.style.transform = 'translateY(-10px) scale(0.95)';
+                card.style.opacity = '0.9';
+            } else if (index === 2) {
+                card.style.transform = 'translateY(-20px) scale(0.9)';
+                card.style.opacity = '0.8';
+            } else if (index === 3) {
+                card.style.transform = 'translateY(-30px) scale(0.85)';
+                card.style.opacity = '0.7';
+            } else {
+                card.style.transform = 'translateY(-40px) scale(0.8)';
+                card.style.opacity = '0.6';
+            }
+            
+            // Re-enable transitions after positioning
+            setTimeout(() => {
+                if (!card.style.willChange || card.style.willChange === 'auto') {
+                    card.style.transition = 'all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                }
+            }, 50);
         }
     });
 }
@@ -495,13 +610,16 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Parallax effect for hero section (reduced for better readability)
+// Parallax effect for hero section with GSAP integration
 window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero && scrolled < window.innerHeight) {
-        // Reduced parallax effect and only apply within hero section
-        hero.style.transform = `translateY(${scrolled * 0.2}px)`;
+    // Only apply basic parallax if GSAP is not handling it
+    if (typeof gsap === 'undefined' || !window.GSAPAnimationController) {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.hero');
+        if (hero && scrolled < window.innerHeight) {
+            // Reduced parallax effect and only apply within hero section
+            hero.style.transform = `translateY(${scrolled * 0.2}px)`;
+        }
     }
 });
 
@@ -561,15 +679,19 @@ style.textContent += particleAnimation;
 // Initialize particles
 createParticles();
 
-// Project card hover effects
+// Project card hover effects with GSAP integration
 document.querySelectorAll('.project-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px) scale(1.02)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-    });
+    // Only add basic hover effects if GSAP is not handling them
+    if (typeof gsap === 'undefined' || !window.GSAPAnimationController) {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    }
+    // GSAP handles enhanced hover effects if available
 });
 
 // Smooth reveal animation for elements
@@ -601,17 +723,42 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Initialize on page load
+// Initialize on page load with GSAP integration
 window.addEventListener('load', () => {
+    dynamicTypeWriter();
+    initializeCardStacks();
+    
+    // Ensure all sections are visible - fallback for GSAP issues
+    const criticalSections = [
+        '.achievements', '.achievement-card', 
+        '.experience', '.timeline-item',
+        '.contact', '.contact-form'
+    ];
+    
+    criticalSections.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.style.opacity = '1';
+            element.style.visibility = 'visible';
+            element.style.transform = 'none';
+        });
+    });
+    
     revealElements();
     
-    // Add loading animation
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
+    // Enhanced loading animation with GSAP fallback
+    if (typeof gsap === 'undefined') {
+        // Fallback animation if GSAP is not loaded
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.5s ease';
+        
+        setTimeout(() => {
+            document.body.style.opacity = '1';
+        }, 100);
+    }
+    // GSAP handles page load animation if available
     
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
+    console.log('Portfolio loaded - all sections should be visible');
 });
 
 // Dynamic year in footer
@@ -667,9 +814,13 @@ const rippleCSS = `
 
 style.textContent += rippleCSS;
 
-// Add ripple effect to all buttons
+// Add ripple effect to all buttons with GSAP integration
 document.querySelectorAll('.btn').forEach(btn => {
-    btn.addEventListener('click', createRipple);
+    // Only add basic ripple if GSAP is not handling it
+    if (typeof gsap === 'undefined' || !window.GSAPAnimationController) {
+        btn.addEventListener('click', createRipple);
+    }
+    // GSAP handles enhanced button animations if available
 });
 
 // Performance optimization: Lazy load images
@@ -709,3 +860,28 @@ function initThemeToggle() {
 }
 
 initThemeToggle();
+
+// Timeline Animation Setup
+function setupTimelineAnimation() {
+    const timeline = document.querySelector('.timeline');
+    if (!timeline) return;
+
+    // Trigger animation when timeline comes into view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                timeline.classList.add('animate');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.3
+    });
+
+    observer.observe(timeline);
+}
+
+// Initialize timeline animation when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setupTimelineAnimation();
+});
