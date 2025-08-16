@@ -101,7 +101,256 @@ function dynamicTypeWriter() {
 // Initialize dynamic typing animation when page loads
 window.addEventListener('load', () => {
     dynamicTypeWriter();
+    initializeCardStacks();
 });
+
+// Initialize Card Stack functionality
+// Initialize Card Stack functionality
+function initializeCardStacks() {
+    initSkillsStack();
+    initProjectsStack();
+}
+
+function initSkillsStack() {
+    const stack = document.getElementById('skills-stack');
+    const cards = stack.querySelectorAll('.stack-card');
+    const currentElement = document.getElementById('skills-current');
+    const totalElement = document.getElementById('skills-total');
+    
+    let currentIndex = 0;
+    const totalCards = cards.length;
+    
+    totalElement.textContent = totalCards;
+    updateCounter(currentElement, currentIndex + 1);
+    
+    // Initialize stack order immediately
+    updateStackOrder(stack);
+    
+    cards.forEach((card, index) => {
+        addCardInteraction(card, () => {
+            removeTopCard(stack, currentElement, () => {
+                currentIndex = (currentIndex + 1) % totalCards;
+                updateCounter(currentElement, currentIndex + 1);
+            });
+        });
+    });
+}
+
+function initProjectsStack() {
+    const stack = document.getElementById('projects-stack');
+    const cards = stack.querySelectorAll('.stack-card');
+    const currentElement = document.getElementById('projects-current');
+    const totalElement = document.getElementById('projects-total');
+    
+    let currentIndex = 0;
+    const totalCards = cards.length;
+    
+    totalElement.textContent = totalCards;
+    updateCounter(currentElement, currentIndex + 1);
+    
+    // Initialize stack order immediately
+    updateStackOrder(stack);
+    
+    cards.forEach((card, index) => {
+        addCardInteraction(card, () => {
+            removeTopCard(stack, currentElement, () => {
+                currentIndex = (currentIndex + 1) % totalCards;
+                updateCounter(currentElement, currentIndex + 1);
+            });
+        });
+    });
+}
+
+function addCardInteraction(card, onSwipe) {
+    let startY = 0;
+    let startX = 0;
+    let currentY = 0;
+    let currentX = 0;
+    let isDragging = false;
+    
+    // Mouse events
+    card.addEventListener('mousedown', handleStart);
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    
+    // Touch events
+    card.addEventListener('touchstart', handleStart, { passive: true });
+    document.addEventListener('touchmove', handleMove, { passive: true });
+    document.addEventListener('touchend', handleEnd);
+    
+    // Click event (for simple click to swipe)
+    card.addEventListener('click', (e) => {
+        const topCard = card.closest('.card-stack').querySelector('.stack-card:first-child');
+        if (!isDragging && card === topCard) {
+            // Simple click - swipe up
+            swipeCard(card, 'up');
+            setTimeout(onSwipe, 300);
+        }
+    });
+    
+    function handleStart(e) {
+        const topCard = card.closest('.card-stack').querySelector('.stack-card:first-child');
+        if (card !== topCard) return; // Only allow interaction with top card
+        
+        if (card.classList.contains('swiped-left') || 
+            card.classList.contains('swiped-right') || 
+            card.classList.contains('swiped-up')) return;
+            
+        isDragging = true;
+        const touch = e.type === 'touchstart' ? e.touches[0] : e;
+        startY = touch.clientY;
+        startX = touch.clientX;
+        card.style.transition = 'none';
+        e.preventDefault();
+    }
+    
+    function handleMove(e) {
+        if (!isDragging) return;
+        
+        const touch = e.type === 'touchmove' ? e.touches : e;
+        currentY = touch.clientY - startY;
+        currentX = touch.clientX - startX;
+        
+        // Apply transform based on drag
+        const rotation = currentX * 0.1;
+        card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
+        
+        // Change opacity based on distance
+        const distance = Math.sqrt(currentX * currentX + currentY * currentY);
+        const opacity = Math.max(0.3, 1 - distance / 200);
+        card.style.opacity = opacity;
+        
+        e.preventDefault();
+    }
+    
+    function handleEnd(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        card.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        
+        const distance = Math.sqrt(currentX * currentX + currentY * currentY);
+        const threshold = 100;
+        
+        if (distance > threshold) {
+            // Determine swipe direction
+            if (Math.abs(currentX) > Math.abs(currentY)) {
+                // Horizontal swipe
+                if (currentX > 0) {
+                    swipeCard(card, 'right');
+                } else {
+                    swipeCard(card, 'left');
+                }
+            } else {
+                // Vertical swipe
+                if (currentY < 0) {
+                    swipeCard(card, 'up');
+                } else {
+                    // Snap back for down swipe
+                    resetCard(card);
+                    return;
+                }
+            }
+            setTimeout(onSwipe, 300);
+        } else {
+            // Snap back
+            resetCard(card);
+        }
+        
+        currentX = 0;
+        currentY = 0;
+    }
+}
+
+function swipeCard(card, direction) {
+    card.style.transition = 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    
+    switch(direction) {
+        case 'left':
+            card.style.transform = 'translateX(-150%) rotate(-30deg)';
+            card.classList.add('swiped-left');
+            break;
+        case 'right':
+            card.style.transform = 'translateX(150%) rotate(30deg)';
+            card.classList.add('swiped-right');
+            break;
+        case 'up':
+            card.style.transform = 'translateY(-150%) scale(0.8)';
+            card.classList.add('swiped-up');
+            break;
+    }
+    card.style.opacity = '0';
+}
+
+function resetCard(card) {
+    card.style.transform = '';
+    card.style.opacity = '';
+}
+
+function removeTopCard(stack, counterElement, callback) {
+    const topCard = stack.querySelector('.stack-card:first-child');
+    
+    if (topCard) {
+        // Move the top card to the bottom of the stack
+        setTimeout(() => {
+            // Reset all styles and classes
+            topCard.classList.remove('swiped-left', 'swiped-right', 'swiped-up');
+            topCard.style.transform = '';
+            topCard.style.opacity = '';
+            topCard.style.transition = '';
+            
+            // Move to bottom
+            stack.appendChild(topCard);
+            
+            // Update stack order with a slight delay to ensure DOM update
+            setTimeout(() => {
+                updateStackOrder(stack);
+                callback();
+            }, 50);
+        }, 300);
+    }
+}
+
+function updateStackOrder(stack) {
+    const cards = Array.from(stack.querySelectorAll('.stack-card'));
+    
+    cards.forEach((card, index) => {
+        // Clear any existing inline styles that might interfere
+        card.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        
+        // Set z-index
+        card.style.zIndex = cards.length - index;
+        
+        // Apply stacking transforms
+        if (index === 0) {
+            card.style.transform = 'translateY(0px) scale(1)';
+            card.style.opacity = '1';
+        } else if (index === 1) {
+            card.style.transform = 'translateY(-10px) scale(0.95)';
+            card.style.opacity = '0.9';
+        } else if (index === 2) {
+            card.style.transform = 'translateY(-20px) scale(0.9)';
+            card.style.opacity = '0.8';
+        } else if (index === 3) {
+            card.style.transform = 'translateY(-30px) scale(0.85)';
+            card.style.opacity = '0.7';
+        } else {
+            card.style.transform = 'translateY(-40px) scale(0.8)';
+            card.style.opacity = '0.6';
+        }
+    });
+}
+
+function updateCounter(element, value) {
+    element.style.transform = 'scale(1.2)';
+    element.style.color = 'var(--primary-color)';
+    
+    setTimeout(() => {
+        element.textContent = value;
+        element.style.transform = 'scale(1)';
+        element.style.color = 'var(--text-primary)';
+    }, 150);
+}
 
 // Intersection Observer for scroll animations
 const observerOptions = {
