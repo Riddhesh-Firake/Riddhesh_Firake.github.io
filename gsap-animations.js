@@ -22,8 +22,32 @@ class GSAPAnimationController {
         window.addEventListener('load', () => {
             setTimeout(() => {
                 ScrollTrigger.refresh();
+                // Safety check to ensure buttons are visible
+                this.ensureButtonsVisible();
             }, 100);
         });
+        
+        // Additional safety check after a delay
+        setTimeout(() => {
+            this.ensureButtonsVisible();
+        }, 3000);
+    }
+    
+    ensureButtonsVisible() {
+        // Safety function to ensure buttons are always visible
+        const buttons = document.querySelectorAll('.hero-buttons .btn');
+        buttons.forEach(btn => {
+            btn.style.opacity = '1';
+            btn.style.visibility = 'visible';
+            btn.style.display = 'inline-block';
+        });
+        
+        const heroButtons = document.querySelector('.hero-buttons');
+        if (heroButtons) {
+            heroButtons.style.opacity = '1';
+            heroButtons.style.visibility = 'visible';
+            heroButtons.style.display = 'flex';
+        }
     }
 
     setupAnimations() {
@@ -41,11 +65,13 @@ class GSAPAnimationController {
         this.setupButtonAnimations();
         this.setupCounterAnimations();
         this.setupFormAnimations();
+        this.setupScrollProgress();
     }
 
     ensureElementsVisible() {
         // Make sure all critical sections are visible by default
         const criticalSections = [
+            '.hero-buttons', '.btn', '.hero-buttons .btn',
             '.achievements', '.achievements-grid', '.achievement-card',
             '.experience', '.timeline', '.timeline-item', '.timeline-content',
             '.contact', '.contact-form', '.form-group',
@@ -75,6 +101,18 @@ class GSAPAnimationController {
     setupPreloader() {
         // Gentle page load animation without hiding content
         gsap.set("body", { opacity: 0.3 });
+        
+        // Ensure critical elements are visible immediately
+        gsap.set(".hero-buttons", { 
+            opacity: 1, 
+            visibility: "visible",
+            display: "flex"
+        });
+        gsap.set(".hero-buttons .btn", { 
+            opacity: 1, 
+            visibility: "visible",
+            display: "inline-block"
+        });
         
         gsap.to("body", {
             opacity: 1,
@@ -155,7 +193,19 @@ class GSAPAnimationController {
 
     setupHeroAnimations() {
         // Hero content entrance animation
-        const tl = gsap.timeline({ delay: 0.8 });
+        const tl = gsap.timeline({ delay: 1.2 }); // Increased delay for better loading
+        
+        // Ensure buttons are visible and properly styled first
+        gsap.set(".hero-buttons", { 
+            opacity: 1, 
+            visibility: "visible", 
+            display: "flex" 
+        });
+        gsap.set(".hero-buttons .btn", { 
+            opacity: 1, 
+            visibility: "visible", 
+            display: "inline-block" 
+        });
         
         tl.from(".hero-title", {
             opacity: 0,
@@ -175,13 +225,23 @@ class GSAPAnimationController {
             duration: 0.8,
             ease: "power3.out"
         }, "-=0.4")
-        .from(".hero-buttons .btn", {
+        .set(".hero-buttons .btn", {
+            opacity: 1,
+            visibility: "visible",
+            display: "inline-block"
+        })
+        .fromTo(".hero-buttons .btn", {
             opacity: 0,
-            y: 30,
-            duration: 0.6,
-            stagger: 0.2,
-            ease: "power3.out"
-        }, "-=0.3")
+            y: 40,
+            scale: 0.8
+        }, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            stagger: 0.3,
+            ease: "back.out(1.7)"
+        }, "-=0.2")
         .from(".profile-card", {
             opacity: 0,
             scale: 0.8,
@@ -839,6 +899,53 @@ class GSAPAnimationController {
                 yoyo: true,
                 repeat: 1,
                 ease: "power2.inOut"
+            });
+        });
+    }
+
+    setupScrollProgress() {
+        // Scroll progress indicator
+        const progressBar = document.getElementById('scroll-progress');
+        if (!progressBar) return;
+
+        // Create scroll progress animation
+        gsap.set(progressBar, { scaleX: 0 });
+
+        ScrollTrigger.create({
+            trigger: "body",
+            start: "top top",
+            end: "bottom bottom",
+            onUpdate: (self) => {
+                const progress = self.progress;
+                gsap.to(progressBar, {
+                    scaleX: progress,
+                    duration: 0.1,
+                    ease: "none"
+                });
+            }
+        });
+
+        // Enhanced scroll behavior
+        this.setupSmoothScroll();
+    }
+
+    setupSmoothScroll() {
+        // Enhanced smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1.2,
+                        scrollTo: {
+                            y: target,
+                            offsetY: 80 // Account for fixed navbar
+                        },
+                        ease: "power2.inOut"
+                    });
+                }
             });
         });
     }
